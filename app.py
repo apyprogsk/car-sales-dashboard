@@ -5,6 +5,9 @@ import plotly.express as px
 # Load the dataset
 df = pd.read_csv('vehicles_us.csv')
 
+# Display column names to check for correctness
+st.write("Column Names:", df.columns)
+
 # Header
 st.header('GSK Garage')
 
@@ -87,16 +90,16 @@ if show_scatter_odometer_model_year:
 
 # Price Analysis Scatter Plot
 st.subheader('Price Analysis')
-fig_price_analysis = px.scatter(filtered_df, x='odometer', y='price', color='transmission',
-                                title='Price vs Odometer by Transmission')
 
-fig_price_analysis.add_scatter(x=filtered_df['model_year'], y=filtered_df['price'], mode='markers', name='Model Year')
+# Create scatter plots for available columns: 'type', 'transmission', 'model_year'
+fig_price_analysis = px.scatter(filtered_df, x='model_year', y='price', color='transmission', title='Price vs Model Year by Transmission')
 
-fig_price_analysis.add_scatter(x=filtered_df['body_type'], y=filtered_df['price'], mode='markers', name='Body Type')
+# Add type to scatter plot
+fig_price_analysis.add_scatter(x=filtered_df['type'], y=filtered_df['price'], mode='markers', name='Type')
 
-fig_price_analysis.add_scatter(x=filtered_df['state'], y=filtered_df['price'], mode='markers', name='State')
-
+# Display the price analysis plot
 st.plotly_chart(fig_price_analysis)
+
 
 
 

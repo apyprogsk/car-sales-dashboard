@@ -8,6 +8,35 @@ df = pd.read_csv('vehicles_us.csv')
 # Header
 st.header('Car Sales Dashboard')
 
+# Add a section for filtering and displaying data
+st.subheader('Filter Cars by Year, Fuel Type, and Price')
+
+# Year selection
+year_options = df['model_year'].dropna().unique()
+selected_years = st.multiselect('Select Year(s)', year_options)
+
+# Fuel type selection
+fuel_options = df['fuel'].dropna().unique()
+selected_fuels = st.multiselect('Select Fuel Type(s)', fuel_options)
+
+# Price range selection
+min_price = int(df['price'].min())
+max_price = int(df['price'].max())
+selected_price_range = st.slider('Select Price Range', min_price, max_price, (min_price, max_price))
+
+# Filter the dataframe based on selections
+filtered_df = df[(df['model_year'].isin(selected_years)) &
+                 (df['fuel'].isin(selected_fuels)) &
+                 (df['price'] >= selected_price_range[0]) &
+                 (df['price'] <= selected_price_range[1])]
+
+# Display the filtered dataframe
+if not filtered_df.empty:
+    st.subheader('Filtered Cars')
+    st.write(filtered_df)
+else:
+    st.write('No cars match the selected criteria.')
+
 # Histogram for the 'price' column
 st.subheader('Price Distribution')
 fig_histogram_price = px.histogram(df, x='price', title='Price Distribution')
@@ -46,25 +75,4 @@ show_scatter_odometer_model_year = st.checkbox('Show Scatter Plot: Odometer vs M
 
 if show_scatter_odometer_model_year:
     st.plotly_chart(fig_scatter_odometer_model_year)
-
-# Add a section for filtering and displaying data
-st.header('Filter Cars by Year and Fuel Type')
-
-# Year selection
-year_options = df['model_year'].dropna().unique()
-selected_years = st.multiselect('Select Year(s)', year_options)
-
-# Fuel type selection
-fuel_options = df['fuel'].dropna().unique()
-selected_fuels = st.multiselect('Select Fuel Type(s)', fuel_options)
-
-# Filter the dataframe based on selections
-filtered_df = df[(df['model_year'].isin(selected_years)) & (df['fuel'].isin(selected_fuels))]
-
-# Display the filtered dataframe
-if not filtered_df.empty:
-    st.subheader('Filtered Cars')
-    st.write(filtered_df)
-else:
-    st.write('No cars match the selected criteria.')
 

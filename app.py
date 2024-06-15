@@ -11,11 +11,14 @@ st.header('GSK Garage')
 # Add a section for filtering and displaying data
 st.subheader('Filter Cars by Year, Fuel Type, and Price')
 
-# Year selection with an 'All' option
-year_options = df['model_year'].dropna().unique()
-year_options_sorted = sorted(year_options)
-year_options_sorted.insert(0, 'All')
-selected_years = st.multiselect('Select Year(s)', year_options_sorted)
+# Year selection with a slider
+min_year = int(df['model_year'].min())
+max_year = int(df['model_year'].max())
+selected_year_range = st.slider('Select Year Range', min_year, max_year, (min_year, max_year))
+
+# Filter dataframe based on selected year range
+filtered_df = df[(df['model_year'] >= selected_year_range[0]) &
+                 (df['model_year'] <= selected_year_range[1])]
 
 # Fuel type selection with an 'All' option
 fuel_options = df['fuel'].dropna().unique()
@@ -24,7 +27,6 @@ fuel_options_sorted.insert(0, 'All')
 selected_fuels = st.multiselect('Select Fuel Type(s)', fuel_options_sorted)
 
 # Update selection logic to handle 'All' option
-selected_years = [year for year in year_options_sorted if year != 'All'] if 'All' in selected_years else selected_years
 selected_fuels = [fuel for fuel in fuel_options_sorted if fuel != 'All'] if 'All' in selected_fuels else selected_fuels
 
 # Price range selection
@@ -32,11 +34,10 @@ min_price = 0
 max_price = int(df['price'].max())
 selected_price_range = st.slider('Select Price Range', min_price, max_price, (min_price, max_price))
 
-# Filter the dataframe based on selections
-filtered_df = df[(df['model_year'].isin(selected_years)) &
-                 (df['fuel'].isin(selected_fuels)) &
-                 (df['price'] >= selected_price_range[0]) &
-                 (df['price'] <= selected_price_range[1])]
+# Filter the dataframe further based on selected filters
+filtered_df = filtered_df[(filtered_df['fuel'].isin(selected_fuels)) &
+                          (filtered_df['price'] >= selected_price_range[0]) &
+                          (filtered_df['price'] <= selected_price_range[1])]
 
 # Display the filtered dataframe
 if not filtered_df.empty:
@@ -83,5 +84,19 @@ show_scatter_odometer_model_year = st.checkbox('Show Scatter Plot: Odometer vs M
 
 if show_scatter_odometer_model_year:
     st.plotly_chart(fig_scatter_odometer_model_year)
+
+# Price Analysis Scatter Plot
+st.subheader('Price Analysis')
+fig_price_analysis = px.scatter(filtered_df, x='odometer', y='price', color='transmission',
+                                title='Price vs Odometer by Transmission')
+
+fig_price_analysis.add_scatter(x=filtered_df['model_year'], y=filtered_df['price'], mode='markers', name='Model Year')
+
+fig_price_analysis.add_scatter(x=filtered_df['body_type'], y=filtered_df['price'], mode='markers', name='Body Type')
+
+fig_price_analysis.add_scatter(x=filtered_df['state'], y=filtered_df['price'], mode='markers', name='State')
+
+st.plotly_chart(fig_price_analysis)
+
 
 

@@ -6,21 +6,29 @@ import plotly.express as px
 df = pd.read_csv('vehicles_us.csv')
 
 # Header
-st.header('Car Sales Dashboard')
+st.header('GSK Garage')
 
 # Add a section for filtering and displaying data
 st.subheader('Filter Cars by Year, Fuel Type, and Price')
 
-# Year selection
+# Year selection with an 'All' option
 year_options = df['model_year'].dropna().unique()
-selected_years = st.multiselect('Select Year(s)', year_options)
+year_options_sorted = sorted(year_options)
+year_options_sorted.insert(0, 'All')
+selected_years = st.multiselect('Select Year(s)', year_options_sorted)
 
-# Fuel type selection
+# Fuel type selection with an 'All' option
 fuel_options = df['fuel'].dropna().unique()
-selected_fuels = st.multiselect('Select Fuel Type(s)', fuel_options)
+fuel_options_sorted = sorted(fuel_options)
+fuel_options_sorted.insert(0, 'All')
+selected_fuels = st.multiselect('Select Fuel Type(s)', fuel_options_sorted)
+
+# Update selection logic to handle 'All' option
+selected_years = [year for year in year_options_sorted if year != 'All'] if 'All' in selected_years else selected_years
+selected_fuels = [fuel for fuel in fuel_options_sorted if fuel != 'All'] if 'All' in selected_fuels else selected_fuels
 
 # Price range selection
-min_price = int(df['price'].min())
+min_price = 0
 max_price = int(df['price'].max())
 selected_price_range = st.slider('Select Price Range', min_price, max_price, (min_price, max_price))
 
@@ -75,4 +83,5 @@ show_scatter_odometer_model_year = st.checkbox('Show Scatter Plot: Odometer vs M
 
 if show_scatter_odometer_model_year:
     st.plotly_chart(fig_scatter_odometer_model_year)
+
 

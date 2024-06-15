@@ -46,3 +46,25 @@ show_scatter_odometer_model_year = st.checkbox('Show Scatter Plot: Odometer vs M
 
 if show_scatter_odometer_model_year:
     st.plotly_chart(fig_scatter_odometer_model_year)
+
+# Add a section for filtering and displaying data
+st.header('Filter Cars by Year and Fuel Type')
+
+# Year selection
+year_options = df['model_year'].dropna().unique()
+selected_years = st.multiselect('Select Year(s)', year_options)
+
+# Fuel type selection
+fuel_options = df['fuel'].dropna().unique()
+selected_fuels = st.multiselect('Select Fuel Type(s)', fuel_options)
+
+# Filter the dataframe based on selections
+filtered_df = df[(df['model_year'].isin(selected_years)) & (df['fuel'].isin(selected_fuels))]
+
+# Display the filtered dataframe
+if not filtered_df.empty:
+    st.subheader('Filtered Cars')
+    st.write(filtered_df)
+else:
+    st.write('No cars match the selected criteria.')
+

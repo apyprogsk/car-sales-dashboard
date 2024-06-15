@@ -88,6 +88,9 @@ if show_scatter_odometer_model_year:
 # Price Analysis Scatter Plot
 st.subheader('Price Analysis')
 
+# Filter out rows with missing values in 'type' and 'transmission'
+filtered_df = filtered_df.dropna(subset=['type', 'transmission'])
+
 # Create scatter plots for available columns: 'type', 'transmission', 'model_year'
 fig_price_analysis = px.scatter(filtered_df, x='model_year', y='price', color='transmission', title='Price vs Model Year by Transmission')
 
@@ -96,6 +99,7 @@ fig_price_analysis.add_scatter(x=filtered_df['type'], y=filtered_df['price'], mo
 
 # Display the price analysis plot
 st.plotly_chart(fig_price_analysis)
+
 
 
 

@@ -5,9 +5,6 @@ import plotly.express as px
 # Load the dataset
 df = pd.read_csv('vehicles_us.csv')
 
-# Display column names to check for correctness
-st.write("Column Names:", df.columns)
-
 # Header
 st.header('GSK Garage')
 
